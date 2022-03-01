@@ -10,6 +10,7 @@ RUN mkdir /buildroot/stocktickerresponse
 COPY stocktickerresponse/stocktickerresponse.go /buildroot/stocktickerresponse
 RUN cd /buildroot && CGO_ENABLED=0 /usr/local/go/bin/go build -o /stockticker main.go
 
-FROM registry.access.redhat.com/ubi8/ubi:8.5
+FROM scratch
 COPY --from=builder /stockticker /stockticker
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 ENTRYPOINT ["/stockticker"]

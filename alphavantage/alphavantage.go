@@ -77,6 +77,18 @@ func (a *ApiResponse) ToStockTickerResponse(d int) *stocktickerresponse.StockTic
 	}
 	r.AverageClosingPrice = tc / float64(len(data))
 	r.Data = data
+	if tz, err := time.LoadLocation(a.Meta.TimeZone); err == nil {
+		lr, e := time.ParseInLocation("2006-01-02 15:04:05", a.Meta.LastRefreshed, tz)
+		if e == nil {
+			r.RefreshTime = lr
+			r.RefreshTimeUTC = lr.In(time.UTC)
+		} else {
+			log.Printf("Couldn't store refresh time: %v\n", e)
+		}
+
+	} else {
+		log.Printf("Couldn't decode timezone from %s: %v\n", a.Meta.TimeZone, err)
+	}
 	return &r
 }
 

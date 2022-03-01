@@ -10,6 +10,8 @@ type StockTickerDate time.Time
 type StockTickerResponse struct {
 	Data                []*StockData `json:"stockData"`
 	AverageClosingPrice float64      `json:"averageClosingPrice"`
+	RefreshTime         time.Time    `json:"dataRefreshTime"`
+	RefreshTimeUTC      time.Time    `json:"dataRefreshTimeUTC"`
 }
 
 type StockData struct {

@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stockticker
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: stockticker
+  name: stockticker
+  namespace: stockticker
+data:
+  NDAYS: "7"
+  SYMBOL: MSFT
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app: stockticker
+  name: stockticker
+  namespace: stockticker
+stringData:
+  APIKEY: your-key-here
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: stockticker
+  name: stockticker
+  namespace: stockticker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stockticker
+  template:
+    metadata:
+      labels:
+        app: stockticker
+    spec:
+      containers:
+      - image: quay.io/martingoldstone/stockticker:latest
+        name: stockticker
+        envFrom:
+        - configMapRef:
+            name: stockticker
+        - secretRef:
+            name: stockticker
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service 
+metadata:
+  name: stockticker
+  namespace: stockticker
+  labels:
+    app: stockticker
+spec:
+  selector:
+    app: stockticker
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stockticker
+  namespace: stockticker
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: stockticker
+            port:
+              number: 80
+        

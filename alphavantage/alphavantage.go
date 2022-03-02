@@ -83,7 +83,13 @@ func (a *ApiResponse) ToStockTickerResponse(d int) *stocktickerresponse.StockTic
 			r.RefreshTime = lr
 			r.RefreshTimeUTC = lr.In(time.UTC)
 		} else {
-			log.Printf("Couldn't store refresh time: %v\n", e)
+			lr, e := time.Parse("2006-01-02", a.Meta.LastRefreshed)
+			if e == nil {
+				r.RefreshTime = lr
+				r.RefreshTimeUTC = lr
+			} else {
+				log.Printf("Couldn't store refresh time: %v\n", e)
+			}
 		}
 
 	} else {

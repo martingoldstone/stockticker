@@ -42,7 +42,7 @@ spec:
         app: stockticker
     spec:
       containers:
-      - image: quay.io/martingoldstone/stockticker:latest
+      - image: quay.io/martingoldstone/stockticker:v1.0.0
         name: stockticker
         envFrom:
         - configMapRef:
